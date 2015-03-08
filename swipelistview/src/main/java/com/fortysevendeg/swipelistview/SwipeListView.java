@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewConfigurationCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -283,6 +284,17 @@ public class SwipeListView extends RecyclerView {
      */
     public void unselectedChoiceStates() {
         touchListener.unselectedChoiceStates();
+    }
+
+    @Override
+    public void setLayoutManager(LayoutManager layout) {
+        super.setLayoutManager(layout);
+
+        if (layout instanceof LinearLayoutManager) {
+            touchListener.setLayoutManager((LinearLayoutManager) layout);
+        } else {
+            throw new IllegalStateException("LayoutManager must be instance of LinearLayoutManager");
+        }
     }
 
     /**

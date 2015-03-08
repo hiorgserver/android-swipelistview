@@ -631,11 +631,21 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
         int moveTo = 0;
         if (opened.get(position)) {
             if (!swap) {
-                moveTo = openedRight.get(position) ? (int) (viewWidth - rightOffset) : (int) (-viewWidth + leftOffset);
+                // in the case (offset < 0) the offset is mesured from the other side.
+                if (openedRight.get(position)) {
+                    moveTo = (rightOffset < 0) ? (int) (-rightOffset) :  (int) (viewWidth - rightOffset);
+                } else {
+                    moveTo = (leftOffset < 0) ? (int) (leftOffset) :  (int) (-viewWidth + leftOffset);
+                }
             }
         } else {
             if (swap) {
-                moveTo = swapRight ? (int) (viewWidth - rightOffset) : (int) (-viewWidth + leftOffset);
+                // in the case (offset < 0) the offset is mesured from the other side.
+                if (swapRight) {
+                    moveTo = (rightOffset < 0) ? (int) (-rightOffset) : (int) (viewWidth -rightOffset);
+                } else {
+                    moveTo = (leftOffset < 0) ? (int) (leftOffset) : (int) (-viewWidth + leftOffset);
+                }
             }
         }
 
@@ -759,7 +769,6 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
                 }
             }
         }
-
     }
 
     /**
@@ -958,7 +967,11 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
 
                 if (swiping && downPosition != ListView.INVALID_POSITION) {
                     if (opened.get(downPosition)) {
-                        deltaX += openedRight.get(downPosition) ? viewWidth - rightOffset : -viewWidth + leftOffset;
+                        if (openedRight.get(downPosition)) {
+                            deltaX += (rightOffset < 0) ? -rightOffset : viewWidth - rightOffset;
+                        } else {
+                            deltaX += (leftOffset < 0) ? leftOffset : -viewWidth + leftOffset;
+                        }
                     }
                     move(deltaX);
                     return true;
