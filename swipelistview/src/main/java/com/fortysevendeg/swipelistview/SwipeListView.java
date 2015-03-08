@@ -20,15 +20,14 @@ package com.fortysevendeg.swipelistview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.database.DataSetObserver;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewConfigurationCompat;
+import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import java.util.List;
@@ -36,7 +35,7 @@ import java.util.List;
 /**
  * ListView subclass that provides the swipe functionality
  */
-public class SwipeListView extends ListView {
+public class SwipeListView extends RecyclerView {
     
     /**
      * log tag
@@ -290,12 +289,20 @@ public class SwipeListView extends ListView {
      * @see android.widget.ListView#setAdapter(android.widget.ListAdapter)
      */
     @Override
-    public void setAdapter(ListAdapter adapter) {
+    public void setAdapter(Adapter adapter) {
         super.setAdapter(adapter);
         touchListener.resetItems();
         if (null != adapter) {
-            adapter.registerDataSetObserver(new DataSetObserver() {
+            /*adapter.registerDataSetObserver(new DataSetObserver() {
 
+                @Override
+                public void onChanged() {
+                    super.onChanged();
+                    onListChanged();
+                    touchListener.resetItems();
+                }
+            });*/
+            adapter.registerAdapterDataObserver(new AdapterDataObserver() {
                 @Override
                 public void onChanged() {
                     super.onChanged();
