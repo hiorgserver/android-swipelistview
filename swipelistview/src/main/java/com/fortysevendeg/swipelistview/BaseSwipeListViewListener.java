@@ -37,6 +37,16 @@ public class BaseSwipeListViewListener implements SwipeListViewListener {
     public void onDismiss(int[] reverseSortedPositions) {
     }
 
+    /**
+     * Called when swipe action opened triggered.
+     *
+     * @param position of the view in the list
+     */
+    @Override
+    public void onOpenActionTriggered(int position) {
+
+    }
+
     @Override
     public int onChangeSwipeMode(int position) {
         return SwipeListView.SWIPE_MODE_DEFAULT;
