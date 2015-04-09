@@ -1108,7 +1108,9 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
                     swipeCurrentAction = SwipeListView.SWIPE_ACTION_OPEN;
                 } else {
                     if (swipeCurrentAction == SwipeListView.SWIPE_ACTION_OPEN) {
-                        swipeCurrentAction = SwipeListView.SWIPE_ACTION_RESET;
+                        swipeCurrentAction = SwipeListView.SWIPE_ACTION_REVEAL;
+                    } else if (swipeCurrentAction == SwipeListView.SWIPE_ACTION_RESET) {
+                        swipeCurrentAction = SwipeListView.SWIPE_ACTION_REVEAL;
                     }
                 }
             }
