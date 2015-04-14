@@ -52,6 +52,7 @@
         <!-- The percentage of the View's width when the back should be revealed.
              Default: 50%-->
         <attr name="minRevealPercentage" format="integer" />
+        <attr name="frontClickableInRevealedState" format="boolean" />
     </declare-styleable>
 
 </resources>

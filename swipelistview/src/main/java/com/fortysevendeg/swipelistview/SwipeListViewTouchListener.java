@@ -67,8 +67,7 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
     // Cached ViewConfiguration and system-wide constant values
     private int slop;
     /**
-     * <p>
-     * Percentage of the View's width, when the back-View
+     * <p>Percentage of the View's width, when the back-View
      * should be revealed.</p>
      * <i>Default: 50%</i>
      */
@@ -83,6 +82,12 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
 
     private int swipeDrawableChecked = 0;
     private int swipeDrawableUnchecked = 0;
+
+    /**
+     * Is onClick-Event enabled if item is in revealed
+     * state?
+     */
+    private boolean frontClickableInRevealedState = false;
 
 
     private LinearLayoutManager mLayoutManager;
@@ -118,6 +123,8 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
     private List<Boolean> checked = new ArrayList<Boolean>();
     private int oldSwipeActionRight;
     private int oldSwipeActionLeft;
+    private SwipeListView.SwipeAllowedDecisionMaker swipeAllowedDecisionMaker;
+    private RecyclerView.OnScrollListener onScrollListener;
 
     /**
      * Constructor
@@ -165,6 +172,11 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
         frontView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (downPosition != ListView.INVALID_POSITION
+                        && opened.get(downPosition) && frontClickableInRevealedState
+                ) {
+                    closeAnimate(v, downPosition);
+                }
                 swipeListView.onClickFrontView(downPosition);
             }
         });
@@ -785,6 +797,10 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
                         }
                     }, 500);
                 }
+
+                if (onScrollListener != null) {
+                    onScrollListener.onScrollStateChanged(recyclerView, newState);
+                }
             }
 
             @Override
@@ -813,6 +829,9 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
                         swipeListView.onLastListItem();
                     }
                 }*/
+                if (onScrollListener != null) {
+                    onScrollListener.onScrolled(view, firstVisibleItem, visibleItemCount);
+                }
             }
         };
     }
@@ -866,7 +885,7 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
 
                     // dont allow swiping if this is on the header or footer or IGNORE_ITEM_VIEW_TYPE or enabled is false on the adapter
                     //boolean allowSwipe = swipeListView.getAdapter().isEnabled(childPosition) && swipeListView.getAdapter().getItemViewType(childPosition) >= 0;
-                    boolean allowSwipe = true;
+                    boolean allowSwipe = isSwipeAllowed(childPosition);
 
                     if (allowSwipe && rect.contains(x, y)) {
                         setParentView(child);
@@ -877,11 +896,13 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
 
 
                         // FIXME: Unterstützung von Einträgen, die nicht swipeable sind (ohne Front/Back-View)
-                        if (frontView == null) {
+                        /*if (frontView == null) {
                             return false;
-                        }
+                        }*/
 
-                        frontView.setClickable(!opened.get(downPosition));
+                        if (!frontClickableInRevealedState) {
+                            frontView.setClickable(!opened.get(downPosition));
+                        }
                         frontView.setLongClickable(!opened.get(downPosition));
 
                         velocityTracker = VelocityTracker.obtain();
@@ -1058,6 +1079,17 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
         return false;
     }
 
+    private boolean isSwipeAllowed(int itemPosition) {
+        if (swipeAllowedDecisionMaker == null)
+            return true;
+
+        return swipeAllowedDecisionMaker.isSwipeAllowed(itemPosition);
+    }
+
+    public void setSwipeAllowedDecisionMaker(SwipeListView.SwipeAllowedDecisionMaker decisionMaker) {
+        swipeAllowedDecisionMaker = decisionMaker;
+    }
+
     private void setActionsTo(int action) {
         oldSwipeActionRight = swipeActionRight;
         oldSwipeActionLeft = swipeActionLeft;
@@ -1178,6 +1210,24 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
      */
     public void setMinRevealPercentage(int minRevealPercentage) {
         this.minRevealPercentage = minRevealPercentage;
+    }
+
+    /**
+     * Sets if the frontView is clickable in revealed state.
+     *
+     * @param clickable
+     */
+    public void setFrontClickableInRevealedState(boolean clickable) {
+        this.frontClickableInRevealedState = clickable;
+    }
+
+    /**
+     * Set a listener that will be notified of any changes in scroll state or position.
+     *
+     * @param listener Listener to set or null to clear
+     */
+    public void setOnScrollListener(RecyclerView.OnScrollListener listener) {
+        this.onScrollListener = listener;
     }
 
     /**
@@ -1307,5 +1357,4 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
             }
         }
     }
-
 }

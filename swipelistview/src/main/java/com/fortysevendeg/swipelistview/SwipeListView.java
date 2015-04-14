@@ -149,6 +149,17 @@ public class SwipeListView extends RecyclerView {
      */
     private SwipeListViewTouchListener touchListener;
 
+    public interface SwipeAllowedDecisionMaker {
+
+        /**
+         * Is swiping allowed for the list item at
+         * the given position.
+         *
+         * @param itemPosition
+         * @return {@code true}, if swiping is allowed.
+         */
+        public boolean isSwipeAllowed(int itemPosition);
+    }
 
     /**
      * If you create a View programmatically you need send back and front identifier
@@ -200,6 +211,7 @@ public class SwipeListView extends RecyclerView {
         int swipeActionRight = SWIPE_ACTION_REVEAL;
         int secondSwipeActionLeft = SWIPE_ACTION_NONE;
         int minRevealPercentage = 50;
+        boolean frontClickableInRevealedState = false;
 
         if (attrs != null) {
             TypedArray styled = getContext().obtainStyledAttributes(attrs, R.styleable.SwipeListView);
@@ -215,6 +227,7 @@ public class SwipeListView extends RecyclerView {
             swipeDrawableChecked = styled.getResourceId(R.styleable.SwipeListView_swipeDrawableChecked, 0);
             swipeDrawableUnchecked = styled.getResourceId(R.styleable.SwipeListView_swipeDrawableUnchecked, 0);
             minRevealPercentage = styled.getResourceId(R.styleable.SwipeListView_minRevealPercentage, 50);
+            frontClickableInRevealedState = styled.getBoolean(R.styleable.SwipeListView_frontClickableInRevealedState, false);
             swipeFrontView = styled.getResourceId(R.styleable.SwipeListView_swipeFrontView, 0);
             swipeBackView = styled.getResourceId(R.styleable.SwipeListView_swipeBackView, 0);
             styled.recycle();
@@ -246,8 +259,9 @@ public class SwipeListView extends RecyclerView {
         touchListener.setSwipeDrawableChecked(swipeDrawableChecked);
         touchListener.setSwipeDrawableUnchecked(swipeDrawableUnchecked);
         touchListener.setMinRevealPercentage(minRevealPercentage);
+        touchListener.setFrontClickableInRevealedState(frontClickableInRevealedState);
         setOnTouchListener(touchListener);
-        setOnScrollListener(touchListener.makeScrollListener());
+        super.setOnScrollListener(touchListener.makeScrollListener());
     }
 
     /**
@@ -341,6 +355,11 @@ public class SwipeListView extends RecyclerView {
                 }
             });
         }
+    }
+
+    @Override
+    public void setOnScrollListener(OnScrollListener listener) {
+        touchListener.setOnScrollListener(listener);
     }
 
     /**
@@ -578,6 +597,10 @@ public class SwipeListView extends RecyclerView {
      */
     public void setSwipeListViewListener(SwipeListViewListener swipeListViewListener) {
         this.swipeListViewListener = swipeListViewListener;
+    }
+
+    public void setSwipeAllowedDecisionMaker(SwipeListView.SwipeAllowedDecisionMaker decisionMaker) {
+        touchListener.setSwipeAllowedDecisionMaker(decisionMaker);
     }
 
     /**
