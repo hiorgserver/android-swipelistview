@@ -774,6 +774,8 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
     public RecyclerView.OnScrollListener makeScrollListener() {
         return new RecyclerView.OnScrollListener() {
 
+            public boolean mFirstScrolledTopEventSkipped = false;
+            public boolean mFirstItemCompletelyVisible = true;
             private boolean isFirstItem = false;
             private boolean isLastItem = false;
 
@@ -796,6 +798,24 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
                             setEnabled(true);
                         }
                     }, 500);
+                }
+
+                /*
+                 * Check if the first list element is visible and call the
+                 * scrolledTop-Event.
+                 */
+                if (null != mLayoutManager) {
+                    if (0 == mLayoutManager.findFirstCompletelyVisibleItemPosition()) {
+                        // it is at top
+                        if (!mFirstItemCompletelyVisible && mFirstScrolledTopEventSkipped) {
+                            swipeListView.onScrolledTop();
+                            mFirstItemCompletelyVisible = true;
+                        }
+                    } else {
+                        if (!mFirstScrolledTopEventSkipped)
+                            mFirstScrolledTopEventSkipped = true;
+                        mFirstItemCompletelyVisible = false;
+                    }
                 }
 
                 if (onScrollListener != null) {

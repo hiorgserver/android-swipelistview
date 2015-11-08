@@ -149,6 +149,10 @@ public class SwipeListView extends RecyclerView {
      */
     private SwipeListViewTouchListener touchListener;
 
+    public void onScrolledTop() {
+        swipeListViewListener.onScrolledTop();
+    }
+
     public interface SwipeAllowedDecisionMaker {
 
         /**
@@ -158,7 +162,7 @@ public class SwipeListView extends RecyclerView {
          * @param itemPosition
          * @return {@code true}, if swiping is allowed.
          */
-        public boolean isSwipeAllowed(int itemPosition);
+        boolean isSwipeAllowed(int itemPosition);
     }
 
     /**
