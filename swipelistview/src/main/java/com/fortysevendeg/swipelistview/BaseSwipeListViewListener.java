@@ -73,7 +73,7 @@ public class BaseSwipeListViewListener implements SwipeListViewListener {
     }
 
     @Override
-    public void onScrolledTop() {
+    public void onScrolledTop(boolean isTop) {
 
     }
 }

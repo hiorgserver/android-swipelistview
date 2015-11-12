@@ -123,5 +123,5 @@ public interface SwipeListViewListener {
      */
     void onLastListItem();
 
-    void onScrolledTop();
+    void onScrolledTop(boolean isTop);
 }

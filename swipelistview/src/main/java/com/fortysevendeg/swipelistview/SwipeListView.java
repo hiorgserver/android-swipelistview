@@ -25,7 +25,6 @@ import android.support.v4.view.ViewConfigurationCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -149,8 +148,8 @@ public class SwipeListView extends RecyclerView {
      */
     private SwipeListViewTouchListener touchListener;
 
-    public void onScrolledTop() {
-        swipeListViewListener.onScrolledTop();
+    public void onScrolledTop(boolean isTop) {
+        swipeListViewListener.onScrolledTop(isTop);
     }
 
     public interface SwipeAllowedDecisionMaker {

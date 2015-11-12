@@ -21,7 +21,6 @@
 package com.fortysevendeg.swipelistview;
 
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Handler;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -808,13 +807,17 @@ public class SwipeListViewTouchListener implements View.OnTouchListener {
                     if (0 == mLayoutManager.findFirstCompletelyVisibleItemPosition()) {
                         // it is at top
                         if (!mFirstItemCompletelyVisible && mFirstScrolledTopEventSkipped) {
-                            swipeListView.onScrolledTop();
+                            swipeListView.onScrolledTop(true);
                             mFirstItemCompletelyVisible = true;
                         }
                     } else {
-                        if (!mFirstScrolledTopEventSkipped)
+                        if (!mFirstScrolledTopEventSkipped) {
                             mFirstScrolledTopEventSkipped = true;
-                        mFirstItemCompletelyVisible = false;
+                        }
+                        if (mFirstItemCompletelyVisible) {
+                            mFirstItemCompletelyVisible = false;
+                            swipeListView.onScrolledTop(false);
+                        }
                     }
                 }
 
